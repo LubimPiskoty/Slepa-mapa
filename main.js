@@ -23,31 +23,61 @@ function onMapClick(e) {
 		.split(", ");
 	popup
 		.setLatLng(e.latlng)
-		.setContent(pos[1] + ", " + pos[0])
+		.setContent(pos[0] + ", " + pos[1])
 		.openOn(map);
 }
 
 map.on("click", onMapClick);
 
-var geojsonMarkerOptions = {
-	radius: 8,
-	fillColor: "#ff7800",
-	color: "#000",
-	weight: 1,
-	opacity: 1,
-	fillOpacity: 0.8,
+let createCircle = (latlng, style, size) => {
+	let c =  L.circle(latlng, style).addTo(map);
+	c.setRadius(size);
+	return c;
 };
 
-let geoLayer = L.geoJSON("", {
-		pointToLayer: function (feature, latlng) {
-			return L.circleMarker(latlng, geojsonMarkerOptions);
-		},
-	}).addTo(map);
+let createPopup = (latlng, text) => {
+	L.popup(popupStyleNames)
+		.setLatLng(latlng)
+		.setContent(text)
+		.openOn(map);
+}
 
-let newPoint = (feature) => {
-	geoLayer.addData(feature);
+let showNames = (dict) => {
+	for (var key in dict) {
+		var value = dict[key]
+		createPopup(value.getLatLng(), key)
+	}
 };
 
-let clearPoints = () => {
-	geoLayer.clearLayers();
+var popupStyleNames = {
+	autoClose: false,
+	closeOnClick: false,
+	closeButton: false,
+}
+
+var circleStyleRed = {
+	// color: 'red',
+	fillColor: '#f03',
+	fill: true,
+}
+
+var circleStyleGreen = {
+	// color: 'green',
+	fillColor: '#BCCF29',
+	fill: true,
+}
+
+var circleStyleHidden = {
+	fillOpacity: 0.5,
+	stroke: false,
+	fill: false,
+}
+
+SIZES = [50000, 150000, 300000];
+
+MORIA = {
+	"Karské": createCircle([75.253057, 73.125], circleStyleGreen, SIZES[1]),
+	"Laptevovcov": createCircle([75.866646, 126.386719], circleStyleGreen, 200000),
 };
+
+
